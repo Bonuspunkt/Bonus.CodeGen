@@ -1,0 +1,32 @@
+image:
+- Visual Studio 2019
+
+branches:
+  only:
+    - master
+
+configuration: Release
+
+
+before_build:
+- dotnet restore
+
+build_script:
+- dotnet build
+
+test_script:
+- dotnet test
+
+after_test:
+- dotnet pack
+
+artifacts:
+- path: '**\*.nupkg'
+
+deploy:
+- provider: NuGet
+  api_key:
+    secure: gyCXGF2/UBV/XLtvg6Iz/Acrbwghdh/SNapM1449YL2SJhzeK0ZKLgQOt6h/q8Uh
+  artifact: /.*\.nupkg/
+  on:
+    appveyor_repo_tag: true
