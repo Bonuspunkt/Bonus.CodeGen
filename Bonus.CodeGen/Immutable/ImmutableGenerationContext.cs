@@ -30,17 +30,12 @@ namespace Bonus.CodeGen
                 .OfType<FieldDeclarationSyntax>()
                 .Any(Filter.PublicStaticReadOnlyNew);
 
-            var targetType = semanticModel.GetDeclaredSymbol(targetClass);
-            var equatableType = compilation.GetTypeByMetadataName("System.IEquatable`1").Construct(targetType);
-            var generateEquatable = targetType.AllInterfaces.Any(@interface => @interface.Equals(equatableType));
-
             return new ImmutableGenerationContext(
                 targetClass.Identifier,
                 properties,
                 parameters,
                 optionalParameters,
-                hasDefault,
-                generateEquatable
+                hasDefault
             );
         }
 
@@ -68,14 +63,13 @@ namespace Bonus.CodeGen
 
         private ImmutableGenerationContext(in SyntaxToken classIdentifier,
             IEnumerable<PropertyDeclarationSyntax> properties, IEnumerable<ParameterSyntax> parameters,
-            IEnumerable<ParameterSyntax> optionalParameters, bool hasDefault, bool generateEquatable)
+            IEnumerable<ParameterSyntax> optionalParameters, bool hasDefault)
         {
             ClassIdentifier = classIdentifier;
             Properties = properties;
             Parameters = parameters;
             OptionalParameters = optionalParameters;
             HasDefault = hasDefault;
-            GenerateEquatable = generateEquatable;
         }
 
         public SyntaxToken ClassIdentifier { get; }
@@ -83,6 +77,5 @@ namespace Bonus.CodeGen
         public IEnumerable<ParameterSyntax> Parameters { get; }
         public IEnumerable<ParameterSyntax> OptionalParameters { get; }
         public bool HasDefault { get; }
-        public bool GenerateEquatable { get; }
     }
 }
