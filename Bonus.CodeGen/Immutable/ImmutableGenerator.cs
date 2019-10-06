@@ -16,6 +16,20 @@ namespace Bonus.CodeGen
         {
         }
 
+        private static SyntaxTriviaList Pragma(bool enable, int number)
+        {
+            return TriviaList(Trivia(
+                PragmaWarningDirectiveTrivia(
+                        Token(enable ? SyntaxKind.RestoreKeyword : SyntaxKind.DisableKeyword),
+                        true)
+                    .WithErrorCodes(
+                        SingletonSeparatedList<ExpressionSyntax>(
+                            LiteralExpression(
+                                SyntaxKind.NumericLiteralExpression,
+                                Literal(number)))
+                    )));
+        }
+        
         public Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
             var targetClass = (ClassDeclarationSyntax)context.ProcessingNode;
@@ -24,6 +38,7 @@ namespace Bonus.CodeGen
 
             var resultClass = targetClass
                 .WithAttributeLists(List(new AttributeListSyntax[0]))
+                .WithBaseList(null)
                 .WithModifiers(TokenList(Token(SyntaxKind.PartialKeyword)))
                 .WithMembers(List(new MemberDeclarationSyntax[]
                 {
@@ -35,9 +50,24 @@ namespace Bonus.CodeGen
             return Task.FromResult(List<MemberDeclarationSyntax>().Add(resultClass));
         }
 
+        
 
         private ConstructorDeclarationSyntax Ctor(ImmutableGenerationContext context)
         {
+            var attribute = Attribute(QualifiedName(IdentifierName("System"), IdentifierName("Obsolete")))
+                .WithArgumentList(
+                    AttributeArgumentList(
+                        SingletonSeparatedList(
+                            AttributeArgument(
+                                LiteralExpression(
+                                    SyntaxKind.StringLiteralExpression,
+                                    Literal("prefer Create() - used for deserialization")
+                                )
+                            )
+                        )
+                    )
+                );
+
             var assignments = context.Properties.Select(property => ExpressionStatement(
                     AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
@@ -48,7 +78,11 @@ namespace Bonus.CodeGen
             );
 
             return ConstructorDeclaration(context.ClassIdentifier)
-                .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword)))
+                .WithAttributeLists(
+                    SingletonList(
+                        AttributeList(SingletonSeparatedList(attribute)
+                    )))
+                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                 .WithParameterList(ParameterList(SeparatedList(context.Parameters)))
                 .WithBody(Block(assignments));
         }
@@ -100,7 +134,12 @@ namespace Bonus.CodeGen
             var createInstance = ObjectCreationExpression(IdentifierName(context.ClassIdentifier))
                 .WithArgumentList(ArgumentList(SeparatedList(arguments)));
 
-            return Block(ReturnStatement(createInstance));
+            return Block(
+                ReturnStatement(createInstance)
+                    .WithReturnKeyword(Token(Pragma(false, 618), SyntaxKind.ReturnKeyword, TriviaList()))
+            ).WithCloseBraceToken(
+                Token(Pragma(true, 618), SyntaxKind.CloseBraceToken, TriviaList())
+            );
         }
 
 
@@ -134,7 +173,12 @@ namespace Bonus.CodeGen
             var createInstance = ObjectCreationExpression(IdentifierName(context.ClassIdentifier))
                 .WithArgumentList(ArgumentList(SeparatedList(arguments)));
 
-            return Block(ReturnStatement(createInstance));
+            return Block(
+                ReturnStatement(createInstance)
+                    .WithReturnKeyword(Token(Pragma(false, 618), SyntaxKind.ReturnKeyword, TriviaList()))
+            ).WithCloseBraceToken(
+                Token(Pragma(true, 618), SyntaxKind.CloseBraceToken, TriviaList())
+            );
         }
     }
 }
