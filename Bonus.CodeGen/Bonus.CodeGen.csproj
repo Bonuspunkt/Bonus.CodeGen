@@ -6,6 +6,7 @@
     <Version>0.0.0</Version>
     <PackageProjectUrl>https://github.com/Bonuspunkt/Bonus.CodeGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Bonuspunkt/Bonus.CodeGen.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/Bonuspunkt/Bonus.CodeGen/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
