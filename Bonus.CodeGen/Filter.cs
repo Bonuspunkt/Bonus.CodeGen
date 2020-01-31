@@ -19,9 +19,17 @@ namespace Bonus.CodeGen
 
         public static bool PublicReadOnly(this PropertyDeclarationSyntax property) =>
             property.PublicNonStatic() &&
+            property.HasBodyLessGetter() &&
+            property.HasNoSetter();
+
+        private static bool HasBodyLessGetter(this PropertyDeclarationSyntax property) =>
+            property.AccessorList != null &&
             property.AccessorList.Accessors.Any(accessor =>
-                accessor.Kind() == SyntaxKind.GetAccessorDeclaration &&
-                accessor.Body == null) &&
+                accessor.Kind() == SyntaxKind.GetAccessorDeclaration && accessor.Body == null);
+
+        private static bool HasNoSetter(this PropertyDeclarationSyntax property) =>
+            property.AccessorList != null &&
             !property.AccessorList.Accessors.Any(SyntaxKind.SetAccessorDeclaration);
+
     }
 }

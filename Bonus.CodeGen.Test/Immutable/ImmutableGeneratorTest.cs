@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 namespace Bonus.CodeGen
 {
@@ -46,5 +46,12 @@ namespace Bonus.CodeGen
             Assert.Equal(GeneratedWithDefault.No, target.Number);
             Assert.Equal(GeneratedWithDefault.Txt, target.Text);
         }
+    }
+
+    [GenerateImmutable]
+    public partial class GeneratedWithArrow
+    {
+        public int Number { get; }
+        public int Mirror => Number;
     }
 }
