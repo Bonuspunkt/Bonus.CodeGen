@@ -1,3 +1,7 @@
+# obsolete 
+replace with C# 9 [Records](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/types/records) and [Source Generators](https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/)
+
+
 # Bonus.CodeGen
 [![Build status](https://ci.appveyor.com/api/projects/status/lex1rpcfcqt9fpad?svg=true)](https://ci.appveyor.com/project/Bonuspunkt/bonus-codegen)
 
